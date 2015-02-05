@@ -1,27 +1,42 @@
 package com.blellow.pop;
 
-import com.badlogic.gdx.ApplicationAdapter;
+
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class BlellowPop extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
+
+public class BlellowPop extends Game {
+
+
+    public Asset asset;
+    public Splash splash;
+    public Menu menu;
+    public Profile profile;
+    public Setting setting;
+    public GameScreen gameScreen;
+    public Player player;
+
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+		asset = new Asset(this);
+        splash = new Splash(this);
+        menu = new Menu(this);
+        profile = new Profile(this);
+        setting = new Setting(this);
+        gameScreen = new GameScreen(this);
+        player = new Player(this);
+
+        splash.nextScreen = menu;
+        this.setScreen(splash);
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+        Gdx.gl.glClearColor(0f,0f,0f,1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+
+		super.render();
 	}
 }
