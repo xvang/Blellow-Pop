@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.blellow.pop.inGame.BallManager;
 import com.blellow.pop.inGame.UIManager;
 
@@ -30,8 +32,9 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
 
         multi = new InputMultiplexer();
 
-        multi.addProcessor(ball.stage);
         multi.addProcessor(this);
+        multi.addProcessor(ball.stage);
+
         Gdx.input.setInputProcessor(multi);
     }
 
@@ -40,7 +43,9 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
     public void show(){
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(multi);
-        Gdx.input.setInputProcessor(ball.stage);
+        //Gdx.input.setInputProcessor(ball.stage);
+
+
         //resetting the managers.
         ui.init();
         ball.init();
@@ -118,14 +123,14 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
 
     @Override
     public boolean touchDown(int x, int y, int z, int pointer){
-
         return false;
     }
 
 
     @Override
     public boolean touchDragged(int x, int y, int pointer){
-        System.out.println("DRAAAAAAGGGEEEEDDD");
+        ball.dragPop(x,y);
+
         return false;
     }
 

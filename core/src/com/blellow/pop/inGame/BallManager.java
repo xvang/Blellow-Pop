@@ -5,7 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Bezier;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -93,7 +95,8 @@ public class BallManager {
         //located at bottom right.
         quitButton = new TextButton("Quit", blellowPop.asset.bubbleUI, "red");
         quitButton.setSize(100f, 50f);
-        quitButton.setPosition(Gdx.graphics.getWidth() - quitButton.getWidth() - 10f, 10f);
+        quitButton.setPosition(Gdx.graphics.getWidth() - quitButton.getWidth() - 10f,
+                Gdx.graphics.getHeight() - quitButton.getHeight() - 10f);
         quitButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent e, float x, float y){
@@ -118,7 +121,7 @@ public class BallManager {
     float spawnPause = 2f;
     public void draw(SpriteBatch batch){
 
-        if(bubbleArray.size < 25 && spawnPause >= 1.5f){
+        if(bubbleArray.size < 25 && spawnPause >= 1.1f){
             spawn();
             spawnPause = 0f;
         }
@@ -190,15 +193,41 @@ public class BallManager {
     }
 
 
+    //Example: If user can pop 3 bubbles per second,
+    //then spawn() should spawn 4 bubbles per second.
     public void spawn(){
+
         int x = (int)(Math.random()*10);
+
+        //kills / time + 2
+        float perSecond = ((float)blellowPop.gameScreen.ui.currentKills /
+                blellowPop.gameScreen.ui.time) + 3;
+
 
         //90% chance of spawning.
         if(x < 8){
-            for(int y = 0; y < 3; y++){
+            for(int y = 0; y < (int)perSecond + 1; y++){
                 Bubble b = blellowPop.asset.bubblePool.obtain();
                 b.init();
                 bubbleArray.add(b);
+            }
+        }
+    }
+
+    public void dragPop(int x, int y){
+
+        //Rectangle located at [x,y] with dimensions 5x5.
+        Rectangle dragRec = new Rectangle(x,y,5,5);
+
+        //Checks every bubble if it intersects with 'dragRec'
+        for(int s = 0; s < bubbleArray.size; s++){
+
+            Bubble b = bubbleArray.get(s);
+
+            Rectangle bRec = new Rectangle(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+
+            if(dragRec.overlaps(bRec)){
+                b.alive = false;
             }
         }
     }
