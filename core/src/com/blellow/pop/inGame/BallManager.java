@@ -20,6 +20,7 @@ import com.blellow.pop.Bubble;
 //Currently, there are 7 total paths.
 public class BallManager {
 
+
     BlellowPop blellowPop;
 
     Array<Bezier<Vector2>> paths;
@@ -49,7 +50,7 @@ public class BallManager {
         paths.add(new Bezier<Vector2>(new Vector2(w*4, hBot), new Vector2(w*4, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*5, hBot), new Vector2(w*5, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*6, hBot), new Vector2(w*6, hTop)));
-        paths.add(new Bezier<Vector2>(new Vector2(w*7, hBot), new Vector2(w*7, hTop)));
+        paths.add(new Bezier<Vector2>(new Vector2(w*0, hBot), new Vector2(w*0, hTop)));
 
 
         //populating the drawables array.
@@ -114,11 +115,15 @@ public class BallManager {
         bubbleArray.clear();
     }
 
-
+    float spawnPause = 2f;
     public void draw(SpriteBatch batch){
 
-        if(bubbleArray.size < 50){
+        if(bubbleArray.size < 25 && spawnPause >= 1.5f){
             spawn();
+            spawnPause = 0f;
+        }
+        else{
+            spawnPause += Gdx.graphics.getDeltaTime();
         }
 
 
@@ -136,18 +141,32 @@ public class BallManager {
 
         for(int x = 0; x < bubbleArray.size; x++){
             Bubble b = bubbleArray.get(x);
-            Vector2 out = new Vector2();
 
-            paths.get(b.chosenPath).valueAt(out, b.time);
 
-            b.setPosition(out.x, out.y);
+            if(b.wait > 0f){
+                b.wait -= Gdx.graphics.getDeltaTime();
+            }
+            else{
+                b.time += b.speed * Gdx.graphics.getDeltaTime();
+                b.zt += b.zspeed * Gdx.graphics.getDeltaTime()/2;
 
-            b.time += b.rate;
 
-            //reached end of path, restart.
-            if(b.time >= 1f)
-                b.time = 0f;
+                paths.get(b.chosenPath).valueAt(b.tmpV, b.time);
+                paths.get(b.chosenPath).derivativeAt(b.tmpV2, b.time);
 
+                b.tmpV2.nor();
+                b.tmpV2.set(-b.tmpV2.y, b.tmpV2.x);
+                b.tmpV2.scl((float)Math.sin(b.zt) * b.zigzag);
+                b.tmpV.add(b.tmpV2);
+
+                b.setPosition(b.tmpV.x, b.tmpV.y);
+
+
+                if(b.time >= 1f){
+                    b.init();//resets all the values.
+                }
+
+            }
 
         }
     }
@@ -174,9 +193,9 @@ public class BallManager {
     public void spawn(){
         int x = (int)(Math.random()*10);
 
-        //80% chance of spawning.
+        //90% chance of spawning.
         if(x < 8){
-            for(int y = 0; y < 5; y++){
+            for(int y = 0; y < 3; y++){
                 Bubble b = blellowPop.asset.bubblePool.obtain();
                 b.init();
                 bubbleArray.add(b);

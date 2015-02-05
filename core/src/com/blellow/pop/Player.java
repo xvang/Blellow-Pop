@@ -7,12 +7,9 @@ public class Player {
     public int kills;
     public float time;
 
-    BlellowPop blellowPop;
-    public Player(BlellowPop b){
-        blellowPop = b;
+    public Player(){
         kills = 0;
         time = 0f;
     }
-
 
 }

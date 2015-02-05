@@ -77,11 +77,76 @@ public class Profile extends ScreenAdapter {
         menu.setPosition(Gdx.graphics.getWidth()/2 - menu.getWidth()/2, Gdx.graphics.getHeight()/3 - 55f);
 
 
+        //table to confirm reset.
+        final Table confirmTable = new Table();
+
+        final Label question = new Label("Are you sure? ", blellowPop.asset.bubbleUI, "white");
+        final TextButton yes = new TextButton("Yes", blellowPop.asset.bubbleUI, "yellow");
+        final TextButton no = new TextButton("No", blellowPop.asset.bubbleUI, "yellow");
+
+        yes.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent e, float x, float y){
+                //clear stats saved in player, and in saved file.
+                blellowPop.player.kills = 0;
+                blellowPop.player.time = 0f;
+
+                //updating the messages.
+                killCounter.setText("Total bubbles popped: " + String.valueOf(blellowPop.player.kills));
+                timePlayed.setText("Total time played: " + String.valueOf(round(blellowPop.player.time, 3)));
+
+                float fbps;
+                //to prevent division by zero.
+                if(blellowPop.player.time > 0f)
+                    fbps = (float)blellowPop.player.kills/blellowPop.player.time;
+                else
+                    fbps = 0f;
+                String bb = String.valueOf(round(fbps, 3));
+
+                bps.setText("Bubbles per second: " + bb);
+                blellowPop.loadSave.clearSavedProfile();
+                confirmTable.setVisible(false);
+            }
+        });
+
+        no.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent e, float x, float y){
+                confirmTable.setVisible(false);
+            }
+        });
+
+        confirmTable.add(question).row();
+        confirmTable.add(yes).width(100f).height(50f).pad(30f);
+        confirmTable.add(no).width(100f).height(50f).pad(30f);
+
+        confirmTable.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()*3.1f/4);
+        confirmTable.setVisible(false);
+
+
+        final TextButton reset = new TextButton("Reset stats", blellowPop.asset.bubbleUI, "red");
+        reset.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent e, float x, float y){
+                confirmTable.setVisible(true);
+            }
+        });
+
+
+        reset.setSize(250f, 60f);
+
+        //top right position
+        reset.setPosition(Gdx.graphics.getWidth() - reset.getWidth() - 20f, Gdx.graphics.getHeight() - reset.getHeight() - 20f);
+
+
         //creating stage.
         stage = new Stage();
 
         stage.addActor(table);
         stage.addActor(menu);
+        stage.addActor(reset);
+        stage.addActor(confirmTable);
+
 
 
 

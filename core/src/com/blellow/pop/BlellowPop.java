@@ -16,6 +16,8 @@ public class BlellowPop extends Game {
     public Setting setting;
     public GameScreen gameScreen;
     public Player player;
+    public LoadSave loadSave;
+
 
 	@Override
 	public void create () {
@@ -25,7 +27,9 @@ public class BlellowPop extends Game {
         profile = new Profile(this);
         setting = new Setting(this);
         gameScreen = new GameScreen(this);
-        player = new Player(this);
+        loadSave = new LoadSave();
+        player = loadSave.loadPlayer();
+
 
         splash.nextScreen = menu;
         this.setScreen(splash);

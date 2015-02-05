@@ -2,6 +2,7 @@ package com.blellow.pop;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,7 +11,7 @@ import com.blellow.pop.inGame.UIManager;
 
 
 //the main game screen.
-public class GameScreen extends ScreenAdapter{
+public class GameScreen extends ScreenAdapter implements InputProcessor{
 
     public BlellowPop blellowPop;
     public SpriteBatch batch;
@@ -19,7 +20,7 @@ public class GameScreen extends ScreenAdapter{
     public BallManager ball;
 
 
-    //private InputMultiplexer multi;
+    private InputMultiplexer multi;
 
     public GameScreen(BlellowPop p){
         blellowPop = p;
@@ -27,23 +28,25 @@ public class GameScreen extends ScreenAdapter{
         ui = new UIManager(blellowPop);
         ball = new BallManager(blellowPop);
 
-       // multi = new InputMultiplexer();
-        //multi.addProcessor(ball.stage);
-        //multi.addProcessor(ui.stage);
-        Gdx.input.setInputProcessor(ball.stage);
+        multi = new InputMultiplexer();
+
+        multi.addProcessor(ball.stage);
+        multi.addProcessor(this);
+        Gdx.input.setInputProcessor(multi);
     }
 
 
     @Override
     public void show(){
         batch = new SpriteBatch();
-        //Gdx.input.setInputProcessor(multi);
+        Gdx.input.setInputProcessor(multi);
         Gdx.input.setInputProcessor(ball.stage);
         //resetting the managers.
         ui.init();
         ball.init();
     }
 
+    private float saveInterval = 0f;
     @Override
     public void render(float delta){
         Gdx.gl.glClearColor(0f,0f,0f,1f);
@@ -55,9 +58,14 @@ public class GameScreen extends ScreenAdapter{
         ball.draw(batch);
         batch.end();
 
-
-        //'ui' uses a stage to draw. no need for spritebatch parameter.
         ui.draw();
+
+        saveInterval += Gdx.graphics.getDeltaTime();
+
+        if(saveInterval > 5f){
+            saveInterval = 0f;
+            blellowPop.loadSave.savePlayer(blellowPop.player);
+        }
     }
 
     @Override
@@ -78,7 +86,7 @@ public class GameScreen extends ScreenAdapter{
 
 
 
-/*
+
 
     @Override
     public boolean scrolled(int pointer){
@@ -117,11 +125,12 @@ public class GameScreen extends ScreenAdapter{
 
     @Override
     public boolean touchDragged(int x, int y, int pointer){
+        System.out.println("DRAAAAAAGGGEEEEDDD");
         return false;
     }
 
     @Override
     public boolean mouseMoved(int x, int y){
         return false;
-    }*/
+    }
 }
