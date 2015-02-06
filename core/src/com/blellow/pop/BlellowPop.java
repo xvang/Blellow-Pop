@@ -43,4 +43,9 @@ public class BlellowPop extends Game {
 
 		super.render();
 	}
+
+    @Override
+    public void dispose(){
+        asset.dispose();
+    }
 }

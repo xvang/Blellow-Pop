@@ -19,14 +19,14 @@ public class Profile extends ScreenAdapter {
     BlellowPop blellowPop;
 
     public float sound;
-    public float difficulty;
+    public float difficulty;//CONTROLS THE AMOUNT OF BUBBLES. IT IS NOT DIFFICULTY.
 
     private Stage stage;
 
     public Profile(BlellowPop b){
 
         blellowPop = b;
-        sound = 1f;
+        sound = 10f;
         difficulty = 1f;
     }
 

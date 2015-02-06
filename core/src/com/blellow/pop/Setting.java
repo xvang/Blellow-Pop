@@ -43,9 +43,17 @@ public class Setting extends ScreenAdapter {
         diffNumber = new Label("", blellowPop.asset.bubbleUI, "white");
         soundNumber = new Label("", blellowPop.asset.bubbleUI, "white");
 
+        final Label message = new Label("To spawn more bubbles, increase \" More Bubbles! \"" +
+                "But too many bubbles may slow down or crash the game, depending on your" +
+                "phone or tablet.",
+         blellowPop.asset.bubbleUI, "white");
+
+        message.setPosition(Gdx.graphics.getWidth()/2 - message.getWidth()/2, Gdx.graphics.getHeight()*3/4);
+
         //displays slider name. located left of slider.
-        final Label diffLabel = new Label("Difficulty", blellowPop.asset.bubbleUI, "white");
+        final Label diffLabel = new Label("More Bubbles!", blellowPop.asset.bubbleUI, "white");
         final Label soundLabel = new Label("Sound", blellowPop.asset.bubbleUI, "white");
+
 
         //setting positions for slider.
         diffSlider.setPosition(w/2, h/2);
@@ -80,11 +88,11 @@ public class Setting extends ScreenAdapter {
 
 
         //adding actors to the stage.
-        stage.addActor(diffSlider);
+        //stage.addActor(diffSlider);
         stage.addActor(soundSlider);
-        stage.addActor(diffLabel);
+        //stage.addActor(diffLabel);
         stage.addActor(soundLabel);
-        stage.addActor(diffNumber);
+        //stage.addActor(diffNumber);
         stage.addActor(soundNumber);
         stage.addActor(menu);
 
@@ -108,7 +116,6 @@ public class Setting extends ScreenAdapter {
         float sound = soundSlider.getVisualValue();
 
         //storing the values in profile.
-        blellowPop.profile.difficulty = difficulty;
         blellowPop.profile.sound = sound;
 
         //updating the display number to the right of sliders.

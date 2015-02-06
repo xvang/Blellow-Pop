@@ -4,8 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Bezier;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.blellow.pop.inGame.BallManager;
@@ -29,6 +35,8 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
 
         ui = new UIManager(blellowPop);
         ball = new BallManager(blellowPop);
+        batch = new SpriteBatch();
+
 
         multi = new InputMultiplexer();
 
@@ -41,12 +49,10 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
 
     @Override
     public void show(){
-        batch = new SpriteBatch();
+
+
         Gdx.input.setInputProcessor(multi);
-        //Gdx.input.setInputProcessor(ball.stage);
 
-
-        //resetting the managers.
         ui.init();
         ball.init();
     }
@@ -55,18 +61,19 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
     @Override
     public void render(float delta){
         Gdx.gl.glClearColor(0f,0f,0f,1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
         //draws the balls.
         ball.draw(batch);
+
         batch.end();
 
         ui.draw();
 
+        //every 5 seconds, save the player stats.
         saveInterval += Gdx.graphics.getDeltaTime();
-
         if(saveInterval > 5f){
             saveInterval = 0f;
             blellowPop.loadSave.savePlayer(blellowPop.player);
@@ -76,6 +83,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
     @Override
     public void dispose(){
         batch.dispose();
+
     }
 
 
@@ -100,6 +108,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
 
     @Override
     public boolean touchUp(int x, int y, int z, int pointer){
+        limit = 0f;
 
         return false;
     }
@@ -123,13 +132,26 @@ public class GameScreen extends ScreenAdapter implements InputProcessor{
 
     @Override
     public boolean touchDown(int x, int y, int z, int pointer){
+
+        ball.dragPop(x, h-y);
         return false;
     }
 
 
+    int h = Gdx.graphics.getHeight();//[0,0] is top left.
+    float limit = 0f;// to prevent infinite touch dragging. It is reset in touchUp();
     @Override
     public boolean touchDragged(int x, int y, int pointer){
-        ball.dragPop(x,y);
+
+        limit += Gdx.graphics.getDeltaTime();
+
+        /*if(limit <= 0.2f){
+            ball.dragPop(x,h-y);
+        }*/
+
+        ball.dragPop(x, h-y);
+
+
 
         return false;
     }

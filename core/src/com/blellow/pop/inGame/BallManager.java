@@ -19,13 +19,13 @@ import com.blellow.pop.Bubble;
 
 
 //this class controls the movements of the bubbles.
-//Currently, there are 7 total paths.
+//Currently, there are 8 total paths.
 public class BallManager {
 
 
     BlellowPop blellowPop;
 
-    Array<Bezier<Vector2>> paths;
+    Array<Bezier<Vector2>> paths, reversePath;
 
     Array<Bubble> bubbleArray;
 
@@ -36,60 +36,81 @@ public class BallManager {
     final TextButton quitButton;
     public Stage stage;
 
+    int size = 1000;
     public BallManager(BlellowPop p){
         blellowPop = p;
         paths = new Array<Bezier<Vector2>>();
+        reversePath = new Array<Bezier<Vector2>>();
         bubbleArray = new Array<Bubble>();
         stage = new Stage();
 
         //creating the paths.
-        float w = Gdx.graphics.getWidth()/8;
-        float hTop = Gdx.graphics.getHeight() + 50f;
-        float hBot = -50f;
+        float w = Gdx.graphics.getWidth()/10;
+        float hTop = Gdx.graphics.getHeight() + 150f;
+        float hBot = -150f;
         paths.add(new Bezier<Vector2>(new Vector2(w*1, hBot), new Vector2(w*1, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*2, hBot), new Vector2(w*2, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*3, hBot), new Vector2(w*3, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*4, hBot), new Vector2(w*4, hTop)));
+        paths.add(new Bezier<Vector2>(new Vector2(w*0, hBot), new Vector2(w*0, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*5, hBot), new Vector2(w*5, hTop)));
         paths.add(new Bezier<Vector2>(new Vector2(w*6, hBot), new Vector2(w*6, hTop)));
-        paths.add(new Bezier<Vector2>(new Vector2(w*0, hBot), new Vector2(w*0, hTop)));
+        paths.add(new Bezier<Vector2>(new Vector2(w*7, hBot), new Vector2(w*7, hTop)));
+        paths.add(new Bezier<Vector2>(new Vector2(w*8, hBot), new Vector2(w*8, hTop)));
+        paths.add(new Bezier<Vector2>(new Vector2(w*9, hBot), new Vector2(w*9, hTop)));
+        paths.add(new Bezier<Vector2>(new Vector2(w*10, hBot), new Vector2(w*10, hTop)));
+
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*1, hTop), new Vector2(w*1, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*2, hTop), new Vector2(w*2, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*3, hTop), new Vector2(w*3, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*4, hTop), new Vector2(w*4, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*0, hTop), new Vector2(w*0, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*5, hTop), new Vector2(w*5, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*6, hTop), new Vector2(w*6, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*7, hTop), new Vector2(w*7, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*8, hTop), new Vector2(w*8, hBot)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*9, hBot), new Vector2(w*9, hTop)));
+        reversePath.add(new Bezier<Vector2>(new Vector2(w*10, hBot), new Vector2(w*10, hTop)));
 
 
-        //populating the drawables array.
-        Array<Drawable> drawables= new Array<Drawable>();
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("redball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("blueball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("orangeball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("yellowball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("violetball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("purpleball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("greenball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("armyball"));
-        drawables.add(blellowPop.asset.bubbleSkin.getDrawable("pinkball"));
+        Array<String> balls = new Array<String>();
+        balls.add("redball");
+        balls.add("blueball");
+        balls.add("orangeball");
+        balls.add("yellowball");
+        balls.add("purpleball");
+        balls.add("greenball");
+        balls.add("armyball");
+        balls.add("pinkball");
+        balls.add("violetball");
 
+        //populating bubblepool.
+        //Example: difficulty level is 50. So 250 objects are created.
 
-        //populating bubblepool with 50 bubbles.
-        for(int x = 0; x < 50; x++){
+        for(int x = 0; x < size; x++){
 
             //when we obtain bubble from pool,
             //all we want to change is the size and path and boolean 'alive'
+            int rand = (int)(Math.random() * balls.size);
             Bubble b = blellowPop.asset.bubblePool.obtain();
 
+            TextureRegion r = blellowPop.asset.bubbleAtlas.findRegion(balls.get(rand));
 
+
+            b.customInit(r);
             //getting a random Drawable and setting it as
             //the picture for a bubble object.
-            int rand = (int)(Math.random()*drawables.size);
-            b.customInit(drawables.get(rand));
+            //int rand = (int)(Math.random()*drawables.size);
+           // b.customInit(drawables.get(rand));
 
             bubbleArray.add(b);
 
-            stage.addActor(b);
+            //stage.addActor(b);
         }
 
         //freeing all the bubbles back into pool.
         blellowPop.asset.bubblePool.freeAll(bubbleArray);
         bubbleArray.clear();
-
 
         //button to quit the game and return to menu.
         //located at bottom right.
@@ -100,8 +121,6 @@ public class BallManager {
         quitButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent e, float x, float y){
-
-
                 //Once the screen changes, the hide() function in gameScreen.java is called.
                 //everything is reset there.
                 blellowPop.splash.nextScreen = blellowPop.menu;
@@ -121,7 +140,12 @@ public class BallManager {
     float spawnPause = 2f;
     public void draw(SpriteBatch batch){
 
-        if(bubbleArray.size < 25 && spawnPause >= 1.1f){
+        //size is the amount of bubbles created.
+        //30 is a safe number to allow for split spawning.
+        //I don't want to pool to be creating new bubbles.
+        //But I have checks in place so pool should never be zero.
+        //This is like double making sure pool doesn't create new bubbles.
+        if((bubbleArray.size < size - 30) && spawnPause >= 1f){
             spawn();
             spawnPause = 0f;
         }
@@ -133,9 +157,10 @@ public class BallManager {
         move();
         checkforPopped();
 
-        for(int x = 0; x < bubbleArray.size; x++)
-            bubbleArray.get(x).draw(batch, 1);
 
+        for(int x = 0; x < bubbleArray.size; x++){
+            bubbleArray.get(x).draw(batch);
+        }
         quitButton.draw(batch, 1);
     }
 
@@ -150,12 +175,20 @@ public class BallManager {
                 b.wait -= Gdx.graphics.getDeltaTime();
             }
             else{
-                b.time += b.speed * Gdx.graphics.getDeltaTime();
-                b.zt += b.zspeed * Gdx.graphics.getDeltaTime()/2;
+
+                b.time += Gdx.graphics.getDeltaTime()/10;
+                b.zt += b.zspeed * Gdx.graphics.getDeltaTime();
 
 
-                paths.get(b.chosenPath).valueAt(b.tmpV, b.time);
-                paths.get(b.chosenPath).derivativeAt(b.tmpV2, b.time);
+                if(b.up){
+                    paths.get(b.chosenPath).valueAt(b.tmpV, b.time);
+                    paths.get(b.chosenPath).derivativeAt(b.tmpV2, b.time);
+                }
+                else{
+                    reversePath.get(b.chosenPath).valueAt(b.tmpV, b.time);
+                    reversePath.get(b.chosenPath).derivativeAt(b.tmpV2, b.time);
+                }
+
 
                 b.tmpV2.nor();
                 b.tmpV2.set(-b.tmpV2.y, b.tmpV2.x);
@@ -164,9 +197,19 @@ public class BallManager {
 
                 b.setPosition(b.tmpV.x, b.tmpV.y);
 
-
+                //if bubble is going up, time > 1f means it reached top
+                //if bubble is going down, time < 0f means it reached bottom
+                //if bubbleArray is not "full", bubble restarts path.
+                //If bubbleArray is full, bubble is returned to pool.
                 if(b.time >= 1f){
-                    b.init();//resets all the values.
+
+                    if(bubbleArray.size < 200){
+                        b.init();//resets all the values.
+                    }
+                    else{
+                        bubbleArray.removeIndex(x);
+                        blellowPop.asset.bubblePool.free(b);
+                    }
                 }
 
             }
@@ -176,42 +219,93 @@ public class BallManager {
 
 
     //checks for popped bubbles and returns to pool.
+    //if a bubble is bigger than 90f in diameter, it should
+    //split into multiple other bubbles, instead of going away.
     public void checkforPopped(){
         for(int x = 0; x < bubbleArray.size; x++){
             Bubble b = bubbleArray.get(x);
-            if(!b.alive){
+            if(!b.alive && b.wait < 0f){
+
+
+                if(goodToSpawn() && b.getWidth() > 80f)
+                    splitSpawn(b);
+
+
+                //plays the pop sound
+                float f = blellowPop.profile.sound / 100f;
+                blellowPop.asset.pop.play(f);
+
 
                 bubbleArray.removeIndex(x);
                 blellowPop.asset.bubblePool.free(b);
+
 
                //counters that keep track of popped balloons are updated.
                 blellowPop.gameScreen.ui.currentKills++;
                 blellowPop.player.kills++;
 
             }
+            //if bubble was clicked before wait period is over,
+            //it is not destroyed.
+            else if(!b.alive && !(b.wait < 0f)){
+                b.alive = true;
+            }
         }
     }
 
+    //takes in a bubble, and spawns a bunch of other bubbles that are smaller.
+    public void splitSpawn(Bubble b){
 
+        int amount = (int)(Math.random()*3) + 2;
+
+        float dimensions;
+
+        for(int x = 0; x < amount; x++){
+
+            if(goodToSpawn()){
+
+                Bubble bubble = blellowPop.asset.bubblePool.obtain();
+
+                dimensions = (float)(Math.random()*(b.getWidth() - 10f) + 10f);
+
+                bubble.setSize(dimensions, dimensions);
+
+                bubble.setPosition(b.getX(), b.getY());
+                bubble.alive = true;
+                bubble.time = b.time;
+                bubble.zigzag = b.zigzag;
+                bubble.tmpV2 = b.tmpV2;
+                bubble.tmpV = b.tmpV;
+                bubble.chosenPath = b.chosenPath;
+                bubble.up = b.up;
+                bubble.zt = b.zt;
+                bubble.speed = (float)(Math.random()*0.1f + 0.02f);
+                bubble.zigzag = b.zigzag;
+                bubble.wait = b.wait;
+                bubble.wait = (float)(Math.random()*0.5f);
+                bubbleArray.add(bubble);
+            }
+
+        }
+    }
     //Example: If user can pop 3 bubbles per second,
     //then spawn() should spawn 4 bubbles per second.
     public void spawn(){
 
-        int x = (int)(Math.random()*10);
+        if(goodToSpawn()){
+            //*kills / time) * 2
+            float perSecond = ((float)blellowPop.gameScreen.ui.currentKills /
+                    blellowPop.gameScreen.ui.time) * 3;
 
-        //kills / time + 2
-        float perSecond = ((float)blellowPop.gameScreen.ui.currentKills /
-                blellowPop.gameScreen.ui.time) + 3;
-
-
-        //90% chance of spawning.
-        if(x < 8){
-            for(int y = 0; y < (int)perSecond + 1; y++){
+            if(perSecond > 4)
+                perSecond = 4;
+            for(int y = 0; y < (int)perSecond + 5; y++){
                 Bubble b = blellowPop.asset.bubblePool.obtain();
                 b.init();
                 bubbleArray.add(b);
             }
         }
+
     }
 
     public void dragPop(int x, int y){
@@ -232,4 +326,9 @@ public class BallManager {
         }
     }
 
+
+    public boolean goodToSpawn(){
+        return blellowPop.asset.bubblePool.getFree() > 0 &&
+                bubbleArray.size < 250;
+    }
 }

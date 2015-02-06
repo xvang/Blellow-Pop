@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Pool;
 
 
-public class Bubble extends Image implements Pool.Poolable{
+public class Bubble extends Sprite implements Pool.Poolable{
 
 
 
@@ -22,49 +22,62 @@ public class Bubble extends Image implements Pool.Poolable{
     public float wait;
     public float zigzag;
     public Vector2 tmpV, tmpV2;
-    public boolean alive;
-    public int chosenPath;
-
+    public boolean alive, up;//if up == true, bubble goes up. if false, bubble goes down.
+    public int chosenPath = (int)(Math.random()*11);
+    private TextureRegion region;
     public Bubble(){
         time = 0f;
-
         zt = 0f;
-        speed = (float)(Math.random()*0.02f + 0.001f);
+        speed = (float)(Math.random()*0.1f + 0.03f);
         zspeed = (float)(Math.random()*1f + 1f);
         wait = (float)(Math.random()*3f);
         zigzag = Gdx.graphics.getDensity() * ((float)(Math.random()*32f)  + 32f);
-
-       // rate = (float)Math.random() % 0.0005f;
+        region = new TextureRegion();
 
         tmpV = new Vector2();
         tmpV2 = new Vector2();
 
-        this.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent e, float x, float y){
-                alive = false;
-            }
-        });
+        float rand = (float)Math.random()*80f + 70f;
+        this.setSize(rand, rand);
     }
 
     //called once only.
-    public void customInit(Drawable d){
+    public void customInit(TextureRegion r){
 
-        this.setDrawable(d);
-        float rand = (float)Math.random()*70f + 50f;
+        region.setRegion(r);
+
+        this.setRegion(r);
+        this.setBounds(this.getX(), this.getY(), r.getRegionWidth(), r.getRegionHeight());
+        float rand = (float)Math.random()*70f + 60f;
         this.setSize(rand, rand);
+
     }
     @Override
     public void reset(){
         alive = true;
+
+        if((int)(Math.random()*2) > 0)
+            up = true;
+        else
+            up = false;
+
+        this.setRegion(region);
     }
 
     public void init(){
 
         alive = true;
-        float rand = (float)Math.random()*70f + 50f;
+        this.setRegion(region);
+
+        if((int)(Math.random()*2) > 0)
+            up = true;
+        else
+            up = false;
+
+
+        float rand = (float)Math.random()*70f + 60f;
         this.setSize(rand, rand);
-        chosenPath = (int)(Math.random()*7);
+        chosenPath = (int)(Math.random()*11);
 
         this.setPosition(-150f, -150f);
         this.time = 0f;
@@ -72,8 +85,8 @@ public class Bubble extends Image implements Pool.Poolable{
         time = 0f;
 
         zt = 0f;
-        speed = (float)(Math.random()*0.05f + 0.02f);
-        zspeed = (float)(Math.random()*1f + 1f);
+        speed = (float)(Math.random()*0.1f + 0.02f);
+        zspeed = (float)(Math.random()*1f + 0.3f);
         wait =  (float)(Math.random()*3f);
         zigzag = Gdx.graphics.getDensity() * ((float)(Math.random()*32f)  + 32f);
 
