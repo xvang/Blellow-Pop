@@ -2,10 +2,9 @@
 
 So this is a tower defense game. I made it in Android Studio with the LibGDX framework.  
 
-You need 3 things to run the game:
+You need 2 things to run the game:
 Android Studio
 LibGDX
-Universal Tween Engine.
 
 
 
