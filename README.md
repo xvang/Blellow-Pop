@@ -1,5 +1,4 @@
-# BCTN-Tower-Defense
-
+# Blellow Pop
 
 So this is a tower defense game. I made it in Android Studio with the LibGDX framework.  
 
